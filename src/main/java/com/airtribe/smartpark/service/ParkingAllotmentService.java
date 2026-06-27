@@ -9,10 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.airtribe.smartpark.entity.ParkingSpace;
+import com.airtribe.smartpark.entity.ParkingTicket;
+import com.airtribe.smartpark.entity.Payment;
 import com.airtribe.smartpark.entity.RateCard;
 import com.airtribe.smartpark.entity.Vehicle;
 import com.airtribe.smartpark.repository.ParkingSpaceRepository;
+import com.airtribe.smartpark.repository.PaymentRepository;
 import com.airtribe.smartpark.repository.RateCardRepository;
+import com.airtribe.smartpark.utility.PaymentStatus;
 
 @Service
 public class ParkingAllotmentService {
@@ -23,16 +27,19 @@ public class ParkingAllotmentService {
 	@Autowired
 	private RateCardRepository rateCardRepository;
 	
-	private void checkin(Vehicle vehicle) {
-		vehicle.setStartTime(LocalDateTime.now());
+	@Autowired
+	private PaymentRepository paymentRepository;
+	
+	private void checkin(ParkingTicket parkingTicket) {
+		parkingTicket.setStartTime(LocalDateTime.now());
 	}
 	
-	private void checkOut(Vehicle vehicle) {
-		vehicle.setEndTime(LocalDateTime.now());
+	private void checkOut(ParkingTicket parkingTicket) {
+		parkingTicket.setEndTime(LocalDateTime.now());
 	}
 	
 	public ParkingSpace allocateParking(Vehicle vehicle) {
-		checkin(vehicle);
+		
 		Optional<ParkingSpace> parkingSpace = parkingSpaceRepository.findByParkingTypeAndOccupiedFalse(vehicle.getVehicleType());
 		ParkingSpace returnedParkingSpace = parkingSpace.get();
 		returnedParkingSpace.setVehicle(vehicle);
@@ -40,15 +47,21 @@ public class ParkingAllotmentService {
 		
 		parkingSpaceRepository.save(returnedParkingSpace);
 		
+		ParkingTicket parkingTicket = new ParkingTicket();
+		parkingTicket.setVehicle(vehicle);
+		parkingTicket.setParkingSpace(returnedParkingSpace);
+		checkin(parkingTicket);
 		return returnedParkingSpace;
 		
 	}
 	
 
-	public ParkingSpace exitParking(Vehicle vehicle) {
-		checkOut(vehicle);
-		calculateFees(vehicle);
-		Optional<ParkingSpace> parkingSpace = parkingSpaceRepository.findByVehicle(vehicle);
+	public ParkingSpace exitParking(ParkingTicket parkingTicket) {
+		
+		checkOut(parkingTicket);
+		calculateFees(parkingTicket);
+		payFees(parkingTicket);
+		Optional<ParkingSpace> parkingSpace = parkingSpaceRepository.findByVehicle(parkingTicket.getVehicle());
 		ParkingSpace returnedParkingSpace = parkingSpace.get();
 		returnedParkingSpace.setVehicle(null);
 		returnedParkingSpace.setOccupied(false);
@@ -59,17 +72,28 @@ public class ParkingAllotmentService {
 		
 	}
 	
-	private double calculateFees(Vehicle vehicle) {
+	private double calculateFees(ParkingTicket parkingTicket) {
 		
 		Double ratePerHour = rateCardRepository
-		        .findByVehicleType(vehicle.getVehicleType())
+		        .findByVehicleType(parkingTicket.getVehicle().getVehicleType())
 		        .map(RateCard::getRatePerHour)
 		        .orElseThrow(() ->
 		            new RuntimeException("Rate card not found"));
 		
-		return Duration.between(vehicle.getStartTime(), vehicle.getEndTime()).toHours() * ratePerHour;
+		return Duration.between(parkingTicket.getStartTime(), parkingTicket.getEndTime()).toHours() * ratePerHour;
 	}
 	
-	
+	private boolean payFees(ParkingTicket parkingTicket) {
+		parkingTicket.setCost(calculateFees(parkingTicket));
+		
+		Payment payment = new Payment();
+		payment.setParkingTicket(parkingTicket);
+		payment.setPaymentStatus(PaymentStatus.PAID);
+		payment.setPaymentDate(LocalDateTime.now());
+		
+		paymentRepository.save(payment);
+			
+		return true;
+	}
 
 }

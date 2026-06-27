@@ -15,10 +15,6 @@ public class Vehicle {
 	@Id
 	private String vehicleRegistrationNumber;
 	
-	private LocalDateTime startTime;
-	
-	private LocalDateTime endTime;
-	
 	@OneToOne
 	private Customer customer;
 	
@@ -31,23 +27,6 @@ public class Vehicle {
 
 	public void setVehicleRegistrationNumber(String vehicleRegistrationNumber) {
 		this.vehicleRegistrationNumber = vehicleRegistrationNumber;
-	}
-
-	
-	public LocalDateTime getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(LocalDateTime startTime) {
-		this.startTime = startTime;
-	}
-
-	public LocalDateTime getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(LocalDateTime endTime) {
-		this.endTime = endTime;
 	}
 
 	public Customer getCustomer() {
@@ -67,20 +46,6 @@ public class Vehicle {
 		this.vehicleType = vehicleType;
 	}
 
-
-	public Vehicle(String vehicleRegistrationNumber, LocalDateTime startTime, LocalDateTime endTime, Customer customer,
-			VehicleType vehicleType) {
-		super();
-		this.vehicleRegistrationNumber = vehicleRegistrationNumber;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.customer = customer;
-		this.vehicleType = vehicleType;
-	}
-
-	public Vehicle() {
-		super();
-	}
 	
 	
 

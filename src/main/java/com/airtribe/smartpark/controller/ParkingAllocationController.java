@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.airtribe.smartpark.entity.ParkingSpace;
+import com.airtribe.smartpark.entity.ParkingTicket;
 import com.airtribe.smartpark.entity.Vehicle;
 import com.airtribe.smartpark.service.ParkingAllotmentService;
 
@@ -24,8 +25,8 @@ public class ParkingAllocationController {
 	}
 	
 	@PostMapping("/exit")
-	public ParkingSpace parkingExit(@RequestBody Vehicle vehicle) {
-		return parkingAllotmentService.exitParking(vehicle);
+	public ParkingSpace parkingExit(@RequestBody ParkingTicket parkingTicket) {
+		return parkingAllotmentService.exitParking(parkingTicket);
 		
 	}
 	
