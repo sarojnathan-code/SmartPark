@@ -1,6 +1,8 @@
 package com.airtribe.smartpark.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
@@ -11,6 +13,7 @@ public class RateCard {
 	@GeneratedValue
 	private Long rateCardId;
 	
+	@Enumerated(EnumType.STRING)
 	private VehicleType vehicleType;
 	
 	private Double ratePerHour;

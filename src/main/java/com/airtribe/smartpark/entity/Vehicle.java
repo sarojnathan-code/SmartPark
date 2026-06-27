@@ -1,8 +1,5 @@
 package com.airtribe.smartpark.entity;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

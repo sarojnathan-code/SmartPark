@@ -9,4 +9,22 @@ public class ParkingSpaceId {
 	
 	private Long floorNumber;
 
+	public Long getParkingSpaceNumber() {
+		return parkingSpaceNumber;
+	}
+
+	public void setParkingSpaceNumber(Long parkingSpaceNumber) {
+		this.parkingSpaceNumber = parkingSpaceNumber;
+	}
+
+	public Long getFloorNumber() {
+		return floorNumber;
+	}
+
+	public void setFloorNumber(Long floorNumber) {
+		this.floorNumber = floorNumber;
+	}
+	
+	
+
 }

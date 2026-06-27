@@ -2,7 +2,8 @@ package com.airtribe.smartpark.entity;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
 
 @Entity
@@ -13,6 +14,7 @@ public class ParkingSpace {
 	
 	private boolean occupied;
 	
+	@Enumerated(EnumType.STRING)
 	private VehicleType parkingType;
 	
 	@OneToOne
